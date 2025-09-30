@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re
 from time import sleep
 import local as lcl
 
