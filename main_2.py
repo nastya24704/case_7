@@ -80,7 +80,7 @@ def save_results(products, filename="sorted_products.txt"):
             f.write(f"Размер: {product['size']}\n")
             f.write(f"Сезон: {product['season']}\n")
             f.write(f"Цена: {product['price']} руб.\n")
-            f.write("="*40 + "\n")
+            f.write("-"*40 + "\n")
 
 # Основной поток
 search_query = input(f"{lcl.ENTER_SEARCH_QUERY}:")
