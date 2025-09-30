@@ -40,7 +40,7 @@ def parse_product(url):
 
     try:
         name = data.find("h1").text
-        country = check(data.find("div", class_="gr-vendor-block"), 0)
+        country = check(data.find("div", class_="gr-vendor-block"), 0).strip()
         article = check(data.find("div", class_="shop2-product-article"), 9)
         color = data.find("div", class_="option-item cvet odd").text[4:]
         tipe = data.find("h1").text.split()
