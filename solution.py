@@ -8,6 +8,10 @@ import time
 import local as lcl
 
 
+headers = {"User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N)"
+                         " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36"}
+
+
 def check(element, start_idx):
     """
     Checks for the presence of an element and returns its text from the specified index.
@@ -35,7 +39,7 @@ def get_last_page(search_query):
     int: Number of the last page of search results.
     """
     url = f'https://obuv-tut2000.ru/magazin/search?gr_smart_search=1&search_text={search_query}'
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
     soup = bs4.BeautifulSoup(response.text, "lxml")
     last_page_tag = soup.find("li", class_="page-num page_last")
     return int(last_page_tag.text) if last_page_tag else 1
@@ -53,11 +57,11 @@ def get_product_urls(search_query):
     """
     total_pages = get_last_page(search_query)
     for page in range(0, total_pages + 1):
-        if page==0:
+        if page == 0:
             url = f'https://obuv-tut2000.ru/magazin/search?&gr_smart_search=1&search_text={search_query}'
         else:
             url = f'https://obuv-tut2000.ru/magazin/search?p={page}&gr_smart_search=1&search_text={search_query}'
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         soup = bs4.BeautifulSoup(response.text, "lxml")
         items = soup.find_all("div", class_="product-item__top")
         for item in items:
@@ -75,7 +79,7 @@ def product_information(url):
     Returns:
     dict | None: A dictionary containing product information, or None if no data is available.
     """
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
     soup = bs4.BeautifulSoup(response.text, "lxml")
     data = soup.find("div", class_="card-page")
     if not data:
@@ -93,7 +97,6 @@ def product_information(url):
         season = check(data.find("div", class_="option-item sezon even"), 5)
         price_str = data.find("strong").text.strip()
 
-        
         price_value = int(price_str) if price_str else 0
 
         return {
@@ -130,7 +133,7 @@ def save_results(products, filename="sorted_products.txt"):
             f.write(f"{lcl.SIZE}: {product['size']}\n")
             f.write(f"{lcl.SEASON}: {product['season']}\n")
             f.write(f"{lcl.PRICE}: {product['price']} руб.\n")
-            f.write("-"*40 + "\n")
+            f.write("-" * 40 + "\n")
 
 
 search_query = input(f"{lcl.ENTER_SEARCH_QUERY}:")
@@ -142,10 +145,8 @@ for url in get_product_urls(search_query):
     if product_data:
         products.append(product_data)
 
-
 products.sort(key=lambda x: x['price'])
-
 
 save_results(products)
 
-print(f"{lcl.PRODUCT_INFORMATION_IN_THE_FOLLOWING_FILE}:", "sorted_products.txt" )
+print(f"{lcl.PRODUCT_INFORMATION_IN_THE_FOLLOWING_FILE}:", "sorted_products.txt")
